@@ -61,4 +61,15 @@ final class PortalActionException extends RuntimeException
             'context' => $this->context,
         ], 422);
     }
+
+    /**
+     * Нарушение бизнес-правила — ожидаемый исход запроса, а не сбой приложения,
+     * поэтому не должно засорять логи на уровне ERROR. Laravel вызывает report()
+     * и пропускает стандартное логирование, если результат строго не равен false
+     * (см. Illuminate\Foundation\Exceptions\Handler::reportThrowable()).
+     */
+    public function report(): bool
+    {
+        return true;
+    }
 }
