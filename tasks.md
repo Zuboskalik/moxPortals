@@ -76,57 +76,57 @@
 
 ## Phase 4: Frontend UI Core (интерфейс, таблицы, карточки, фильтры)
 
-- [ ] Task 4.1: Настроить React Router с маршрутами `/` (порталы), `/logs`, `/ai-worklog` и общий Layout с верхним таб-баром навигации.
-- [ ] Task 4.2: Создать компонент `RiskBadge` (цветовая индикация CRITICAL/HIGH/MEDIUM/LOW через Tailwind), проверить визуально на 4 тестовых значениях.
-- [ ] Task 4.3: Создать компонент `PortalCard` (статичная верстка, принимает объект портала как проп, отображает все поля из [specify.md §2.1](specify.md) + `RiskBadge`), проверить рендер на моковых данных.
-- [ ] Task 4.4: Создать компонент `PortalList` (рендерит список `PortalCard` по массиву порталов), проверить рендер на моковом массиве из 3-5 порталов.
-- [ ] Task 4.5: Реализовать визуальное выделение карточек с `risk_level = CRITICAL` (AC-1.4) — отдельный класс/бордер/фон в `PortalCard`.
-- [ ] Task 4.6: Создать компонент `PortalFilters` (select по `status`, select по `risk_level`), проверить, что выбор опций вызывает переданный `onChange` с корректными значениями (на моках, без API).
-- [ ] Task 4.7: Создать компонент `DashboardSummary` (принимает объект `summary` как проп, отображает счётчики по статусам/риск-уровням, средний risk score, топ-5 рискованных порталов), проверить рендер на моковом `summary`.
-- [ ] Task 4.8: Создать компонент `ActionLogsTable` (таблица логов с колонками `action_type`, `description`, `timestamp`), проверить рендер на моковом массиве логов.
-- [ ] Task 4.9: Добавить в `ActionLogsTable` раскрывающуюся строку (accordion) с diff `previous_state` vs `new_state` (AC-6.2), проверить визуально на моковой записи с различающимися состояниями.
-- [ ] Task 4.10: Создать компонент `ToastProvider`/`useToast` (контекст, стек уведомлений, автоскрытие через таймаут, ручное закрытие), проверить показ/скрытие тостов вручную (кнопка-триггер в деве).
-- [ ] Task 4.11: Создать заготовку `ActionModal` (открытие/закрытие, заголовок с названием действия, кнопки "Подтвердить"/"Отмена"), без интеграции с API — проверить открытие для каждого из 4 действий на моковом портале.
+- [x] Task 4.1: Настроить React Router с маршрутами `/` (порталы), `/logs`, `/ai-worklog` и общий Layout с верхним таб-баром навигации. *(Реализовано с сознательным отклонением: по явному ТЗ шапка переключает только 2 вкладки — «Панель управления» и «AI Worklog»; журнал событий отображается секцией на той же странице `/`, отдельный `/logs` не создавался.)*
+- [x] Task 4.2: Создать компонент `RiskBadge` (цветовая индикация CRITICAL/HIGH/MEDIUM/LOW через Tailwind), проверить визуально на 4 тестовых значениях.
+- [x] Task 4.3: Создать компонент `PortalCard` (статичная верстка, принимает объект портала как проп, отображает все поля из [specify.md §2.1](specify.md) + `RiskBadge`), проверить рендер на моковых данных.
+- [x] Task 4.4: Создать компонент `PortalList` (рендерит список `PortalCard` по массиву порталов), проверить рендер на моковом массиве из 3-5 порталов.
+- [x] Task 4.5: Реализовать визуальное выделение карточек с `risk_level = CRITICAL` (AC-1.4) — отдельный класс/бордер/фон в `PortalCard`.
+- [x] Task 4.6: Создать компонент `PortalFilters` (select по `status`, select по `risk_level`), проверить, что выбор опций вызывает переданный `onChange` с корректными значениями (на моках, без API).
+- [x] Task 4.7: Создать компонент `DashboardSummary` (принимает объект `summary` как проп, отображает счётчики по статусам/риск-уровням, средний risk score, топ-5 рискованных порталов), проверить рендер на моковом `summary`.
+- [x] Task 4.8: Создать компонент `ActionLogsTable` (таблица логов с колонками `action_type`, `description`, `timestamp`), проверить рендер на моковом массиве логов.
+- [x] Task 4.9: Добавить в `ActionLogsTable` раскрывающуюся строку (accordion) с diff `previous_state` vs `new_state` (AC-6.2), проверить визуально на моковой записи с различающимися состояниями.
+- [x] Task 4.10: Создать компонент `ToastProvider`/`useToast` (контекст, стек уведомлений, автоскрытие через таймаут, ручное закрытие), проверить показ/скрытие тостов вручную (кнопка-триггер в деве).
+- [x] Task 4.11: Создать заготовку `ActionModal` (открытие/закрытие, заголовок с названием действия, кнопки "Подтвердить"/"Отмена"), без интеграции с API — проверить открытие для каждого из 4 действий на моковом портале. *(Сразу реализована полная версия с интеграцией — см. Phase 5.)*
 
 ---
 
 ## Phase 5: Frontend Integration & State (связка с API, модальные окна, обработка 422)
 
-- [ ] Task 5.1: Создать `src/api/client.js` — экземпляр `axios` с `baseURL` из `VITE_API_URL` и response-интерцептором, нормализующим ошибки 422 (`business_rule` vs `validation`) по формату из [plan.md §6.1](plan.md).
-- [ ] Task 5.2: Создать `src/api/portals.js` с функциями `fetchPortals(filters)`, `fetchPortal(id)`, `performAction(id, payload)`, проверить каждую вызовом к запущенному backend (happy path).
-- [ ] Task 5.3: Создать `src/api/logs.js` с функцией `fetchLogs(filters)`, проверить вызовом к запущенному backend.
-- [ ] Task 5.4: Настроить `QueryClientProvider` (React Query) в корне приложения (`main.jsx`), проверить DevTools React Query отображают активный клиент.
-- [ ] Task 5.5: Создать хук `usePortals(filters)` на `useQuery(['portals', filters], …)`, подключить к `PortalsPage`, заменив моковые данные на реальные из API.
-- [ ] Task 5.6: Создать хук `usePortal(id)` на `useQuery(['portal', id], …)` для детального просмотра портала (если используется отдельная страница/панель деталей).
-- [ ] Task 5.7: Создать хук `useLogs(filters)` на `useQuery(['logs', filters], …)`, подключить к `LogsPage`, заменив моковые данные на реальные.
-- [ ] Task 5.8: Подключить реальный `summary` из ответа `usePortals` к `DashboardSummary` на `PortalsPage`, убедиться, что отображаются реальные агрегаты с backend.
-- [ ] Task 5.9: Подключить `PortalFilters` к состоянию фильтров `PortalsPage`, проверить, что изменение фильтра перезапускает `useQuery` с новыми параметрами и обновляет список.
-- [ ] Task 5.10: Создать хук `usePortalAction()` на `useMutation`, вызывающий `performAction`, с `onSuccess` → `invalidateQueries(['portals'])` и `invalidateQueries(['logs'])`.
-- [ ] Task 5.11: Подключить `usePortalAction` к `ActionModal` — сабмит формы вызывает мутацию с `action` и `force_evacuate`.
-- [ ] Task 5.12: Реализовать в `ActionModal` условный блок `ForceEvacuateWarning` для действия `close`, когда `portal.creatures_count > 0` (чекбокс подтверждения, включающий `force_evacuate=true` в payload).
-- [ ] Task 5.13: Реализовать в `ActionModal` блокировку кнопки подтверждения для действия `dispatch_observer`, когда `portal.risk_level === 'CRITICAL'` (UX-дублирование BR-2), с поясняющим текстом.
-- [ ] Task 5.14: Реализовать вызов `showToast` при успешной мутации (`onSuccess`) с сообщением об успешном выполнении действия.
-- [ ] Task 5.15: Реализовать вызов `showToast` при ошибке мутации (`onError`) с текстом `error.message` и, для `business_rule`, отображением `error.errorCode`.
-- [ ] Task 5.16: Проверить вручную: `ActionModal` не закрывается при получении 422 (портал/форма остаются видны для повторной попытки).
-- [ ] Task 5.17: Проверить вручную (после Phase 6, seed-demo): попытка `stabilize` на закрытом портале через UI — появляется Toast с `PORTAL_ALREADY_CLOSED`, состояние портала в списке не меняется.
-- [ ] Task 5.18: Проверить вручную: попытка `close` без `force_evacuate` на портале с существами — Toast `EVACUATION_REQUIRED`, автоматическое раскрытие `ForceEvacuateWarning` в модалке.
-- [ ] Task 5.19: Проверить вручную: попытка `dispatch_observer` на CRITICAL-портале — кнопка задизейблена на клиенте; при обходе через прямой API-вызов (curl) backend всё равно возвращает 422.
-- [ ] Task 5.20: Проверить вручную: после успешного действия любого типа список порталов и журнал логов на странице обновляются без ручного релоада страницы.
+- [x] Task 5.1: Создать `src/api/client.js` — экземпляр `axios` с `baseURL` из `VITE_API_URL` и response-интерцептором, нормализующим ошибки 422 (`business_rule` vs `validation`) по формату из [plan.md §6.1](plan.md).
+- [x] Task 5.2: Создать `src/api/portals.js` с функциями `fetchPortals(filters)`, `fetchPortal(id)`, `performAction(id, payload)`, проверить каждую вызовом к запущенному backend (happy path).
+- [x] Task 5.3: Создать `src/api/logs.js` с функцией `fetchLogs(filters)`, проверить вызовом к запущенному backend.
+- [x] Task 5.4: Настроить `QueryClientProvider` (React Query) в корне приложения (`main.jsx`), проверить DevTools React Query отображают активный клиент.
+- [x] Task 5.5: Создать хук `usePortals(filters)` на `useQuery(['portals', filters], …)`, подключить к `PortalsPage`, заменив моковые данные на реальные из API.
+- [ ] Task 5.6: Создать хук `usePortal(id)` на `useQuery(['portal', id], …)` для детального просмотра портала (если используется отдельная страница/панель деталей). *(Не реализовано — в текущем UI нет отдельной страницы деталей портала, вся информация доступна в карточке/строке таблицы.)*
+- [x] Task 5.7: Создать хук `useLogs(filters)` на `useQuery(['logs', filters], …)`, подключить к `LogsPage`, заменив моковые данные на реальные.
+- [x] Task 5.8: Подключить реальный `summary` из ответа `usePortals` к `DashboardSummary` на `PortalsPage`, убедиться, что отображаются реальные агрегаты с backend.
+- [x] Task 5.9: Подключить `PortalFilters` к состоянию фильтров `PortalsPage`, проверить, что изменение фильтра перезапускает `useQuery` с новыми параметрами и обновляет список.
+- [x] Task 5.10: Создать хук `usePortalAction()` на `useMutation`, вызывающий `performAction`, с `onSuccess` → `invalidateQueries(['portals'])` и `invalidateQueries(['logs'])`.
+- [x] Task 5.11: Подключить `usePortalAction` к `ActionModal` — сабмит формы вызывает мутацию с `action` и `force_evacuate`.
+- [x] Task 5.12: Реализовать в `ActionModal` условный блок `ForceEvacuateWarning` для действия `close`, когда `portal.creatures_count > 0` (чекбокс подтверждения, включающий `force_evacuate=true` в payload).
+- [x] Task 5.13: Реализовать в `ActionModal` блокировку кнопки подтверждения для действия `dispatch_observer`, когда `portal.risk_level === 'CRITICAL'` (UX-дублирование BR-2), с поясняющим текстом.
+- [x] Task 5.14: Реализовать вызов `showToast` при успешной мутации (`onSuccess`) с сообщением об успешном выполнении действия.
+- [x] Task 5.15: Реализовать вызов `showToast` при ошибке мутации (`onError`) с текстом `error.message` и, для `business_rule`, отображением `error.errorCode`.
+- [x] Task 5.16: Проверить вручную: `ActionModal` не закрывается при получении 422 (портал/форма остаются видны для повторной попытки). *(Гарантировано конструкцией кода: `onClose` вызывается только в `onSuccess` мутации.)*
+- [x] Task 5.17: Проверить вручную (после Phase 6, seed-demo): попытка `stabilize` на закрытом портале через UI — появляется Toast с `PORTAL_ALREADY_CLOSED`, состояние портала в списке не меняется. *(В финальном UI такие действия дополнительно блокируются на уровне кнопок для закрытых порталов — недостижимое состояние подтверждено и на backend через curl.)*
+- [x] Task 5.18: Проверить вручную: попытка `close` без `force_evacuate` на портале с существами — Toast `EVACUATION_REQUIRED`, автоматическое раскрытие `ForceEvacuateWarning` в модалке. Проверено вручную в браузере на демо-портале «Звенящая Арка» (3 существа).
+- [x] Task 5.19: Проверить вручную: попытка `dispatch_observer` на CRITICAL-портале — кнопка задизейблена на клиенте; при обходе через прямой API-вызов (curl) backend всё равно возвращает 422. Проверено: UI блокирует, curl-запрос вернул `422 RISK_TOO_HIGH_FOR_OBSERVER`.
+- [x] Task 5.20: Проверить вручную: после успешного действия любого типа список порталов и журнал логов на странице обновляются без ручного релоада страницы. Проверено на `close` (force_evacuate) и `stabilize` — сводка, карточки и журнал обновились мгновенно.
 
 ---
 
 ## Phase 6: AI Worklog Component & Demo Seeder
 
-- [ ] Task 6.1: Создать `App\Console\Seeders\DemoPortalSeeder` (или `DatabaseSeeder`-класс), генерирующий 5 порталов, покрывающих все edge cases из [plan.md §2.5](plan.md) (CRITICAL-риск, `closed`-статус, `creatures_count > 0`, безопасный к закрытию, "здоровый" LOW-риск).
-- [ ] Task 6.2: Реализовать `DemoSeedController::run()` — транзакционная очистка `portal_logs`/`portals` и вызов сидера, с guard `abort_unless(app()->environment(['local','testing']), 403)`.
-- [ ] Task 6.3: Зарегистрировать маршрут `POST /api/portals/seed-demo`, проверить вручную вызов через curl в `local`-окружении — БД пересоздаётся с 5 портами.
-- [ ] Task 6.4: Написать Feature-тест `DemoSeedTest`: вызов в `testing`-окружении возвращает 200 и создаёт ожидаемое количество порталов с нужными характеристиками (по одному на каждый edge case).
-- [ ] Task 6.5: Написать Feature-тест `DemoSeedTest`: вызов при замоканном окружении `production` возвращает HTTP 403.
-- [ ] Task 6.6: Добавить в frontend (например, кнопку в `PortalsPage` или отдельный dev-only UI) вызов `POST /api/portals/seed-demo` для удобства ручного тестирования UI.
-- [ ] Task 6.7: Создать `frontend/src/data/ai-worklog.json` со структурой записей (`stage`, `prompt`, `ai_mistakes`, `manual_overrides`, `timestamp`) по формату из [specify.md §7](specify.md), заполнить реальными этапами разработки текущего проекта.
-- [ ] Task 6.8: Создать компонент `AIWorklogPage`, читающий `ai-worklog.json` и рендерящий хронологический таймлайн этапов.
-- [ ] Task 6.9: Реализовать в `AIWorklogPage` отображение `ai_mistakes`/`manual_overrides` как списков, с плейсхолдером ("Ошибок не зафиксировано" / "Правок не было") для пустых массивов (AC-8.4).
-- [ ] Task 6.10: Проверить вручную: вкладка `/ai-worklog` отображает все записи из JSON без ошибок консоли, пустые секции отображаются корректно (не ломают вёрстку).
+- [x] Task 6.1: Создать `App\Console\Seeders\DemoPortalSeeder` (или `DatabaseSeeder`-класс), генерирующий 5 порталов, покрывающих все edge cases из [plan.md §2.5](plan.md) (CRITICAL-риск, `closed`-статус, `creatures_count > 0`, безопасный к закрытию, "здоровый" LOW-риск). *(Выполнено вне очереди фаз — потребовалось для рабочей кнопки "Сбросить к демо-состояниям" из Phase 4/5.)*
+- [x] Task 6.2: Реализовать `DemoSeedController::run()` — транзакционная очистка `portal_logs`/`portals` и вызов сидера, с guard `abort_unless(app()->environment(['local','testing']), 403)`.
+- [x] Task 6.3: Зарегистрировать маршрут `POST /api/portals/seed-demo`, проверить вручную вызов через curl в `local`-окружении — БД пересоздаётся с 5 портами. Проверено: `curl -X POST .../seed-demo` → `{"message":"Демо-данные пересозданы.","portals_created":5}`.
+- [x] Task 6.4: Написать Feature-тест `DemoSeedTest`: вызов в `testing`-окружении возвращает 200 и создаёт ожидаемое количество порталов с нужными характеристиками (по одному на каждый edge case).
+- [x] Task 6.5: Написать Feature-тест `DemoSeedTest`: вызов при замоканном окружении `production` возвращает HTTP 403.
+- [x] Task 6.6: Добавить в frontend (например, кнопку в `PortalsPage` или отдельный dev-only UI) вызов `POST /api/portals/seed-demo` для удобства ручного тестирования UI. Реализовано как кнопка «Сбросить к демо-состояниям» в `Header` с диалогом подтверждения.
+- [x] Task 6.7: Создать `frontend/src/data/ai-worklog.json` со структурой записей (`stage`, `prompt`, `ai_mistakes`, `manual_overrides`, `timestamp`) по формату из [specify.md §7](specify.md), заполнить реальными этапами разработки текущего проекта.
+- [x] Task 6.8: Создать компонент `AIWorklogPage`, читающий `ai-worklog.json` и рендерящий хронологический таймлайн этапов.
+- [x] Task 6.9: Реализовать в `AIWorklogPage` отображение `ai_mistakes`/`manual_overrides` как списков, с плейсхолдером ("Ошибок не зафиксировано" / "Правок не было") для пустых массивов (AC-8.4).
+- [x] Task 6.10: Проверить вручную: вкладка `/ai-worklog` отображает все записи из JSON без ошибок консоли, пустые секции отображаются корректно (не ломают вёрстку). Проверено в браузере, консоль чистая.
 
 ---
 
