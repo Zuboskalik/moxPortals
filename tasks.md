@@ -6,11 +6,11 @@
 
 ## Phase 1: Setup Workspace (инициализация /backend и /frontend)
 
-- [ ] Task 1.1: Создать корневую структуру монорепозитория (`/backend`, `/frontend`), убедиться что `specify.md`/`plan.md` остаются в корне.
-- [ ] Task 1.2: Инициализировать Laravel 11 проект в `/backend` (`laravel new` или `composer create-project`), проверить, что `php artisan serve` запускается без ошибок.
-- [ ] Task 1.3: Настроить `/backend/.env` для подключения к MySQL (`127.0.0.1:3306`, база `moxPortals`, логин/пароль `mysql`/`mysql`), проверить `php artisan migrate:status` без ошибок соединения.
-- [ ] Task 1.4: Создать базу `moxPortals` в локальном MySQL (если не существует) и убедиться, что Laravel успешно подключается (`php artisan db:show`).
-- [ ] Task 1.5: Настроить `phpunit.xml` для тестового окружения (отдельная тестовая БД или `DB_CONNECTION=sqlite`/`:memory:` для тестов), проверить `php artisan test` (пустой прогон без тестов проходит).
+- [x] Task 1.1: Создать корневую структуру монорепозитория (`/backend`, `/frontend`), убедиться что `specify.md`/`plan.md` остаются в корне.
+- [x] Task 1.2: Инициализировать Laravel 11 проект в `/backend` (`laravel new` или `composer create-project`), проверить, что `php artisan serve` запускается без ошибок.
+- [x] Task 1.3: Настроить `/backend/.env` для подключения к MySQL (`127.0.0.1:3306`, база `moxPortals`, логин/пароль `mysql`/`mysql`), проверить `php artisan migrate:status` без ошибок соединения.
+- [x] Task 1.4: Создать базу `moxPortals` в локальном MySQL (если не существует) и убедиться, что Laravel успешно подключается (`php artisan db:show`).
+- [x] Task 1.5: Настроить `phpunit.xml` для тестового окружения (отдельная тестовая БД или `DB_CONNECTION=mysql`/`:memory:` для тестов), проверить `php artisan test` (пустой прогон без тестов проходит).
 - [ ] Task 1.6: Инициализировать React + Vite проект в `/frontend` (`npm create vite@latest`), проверить `npm run dev` открывает стартовую страницу.
 - [ ] Task 1.7: Установить и настроить Tailwind CSS в `/frontend` (конфиг, директивы в `index.css`), проверить, что тестовый класс Tailwind (`text-red-500`) применяется в браузере.
 - [ ] Task 1.8: Установить `axios`, `@tanstack/react-query`, `react-router-dom` в `/frontend`, проверить успешный `npm run build` без ошибок разрешения зависимостей.
@@ -21,56 +21,56 @@
 
 ## Phase 2: Backend Domain & Business Logic (миграции, сервисы, контроллеры, edge cases)
 
-- [ ] Task 2.1: Создать миграцию `create_portals_table` с полями по [plan.md §1.2](plan.md) (`id` UUID, `name`, `destination_world`, `energy_level`, `stability`, `time_to_collapse`, `creatures_count`, `status` enum, timestamps) и индексом по `status`.
-- [ ] Task 2.2: Добавить CHECK-констрейнты на `energy_level` (1..100) и `stability` (0..1) в миграцию `portals`, проверить `php artisan migrate` выполняется без ошибок.
-- [ ] Task 2.3: Создать миграцию `create_portal_logs_table` (`id` UUID, `portal_id` FK, `action_type` enum, `description`, `previous_state` JSON, `new_state` JSON, `timestamp`), внешний ключ `onDelete('cascade')`, индекс `(portal_id, timestamp)`.
-- [ ] Task 2.4: Прогнать `php artisan migrate` на локальной БД `moxPortals`, проверить наличие обеих таблиц (`php artisan db:table portals`, `php artisan db:table portal_logs`).
-- [ ] Task 2.5: Создать Enum `PortalStatus` (`active`, `stabilized`, `closed`, `under_review`) в `app/Enums`.
-- [ ] Task 2.6: Создать Enum `ActionType` (`stabilize`, `close`, `dispatch_observer`, `mark_under_review`) в `app/Enums`.
-- [ ] Task 2.7: Создать Enum `RiskLevel` (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`) в `app/Enums`.
-- [ ] Task 2.8: Создать модель `Portal` с `HasUuids`, кастами полей (`energy_level` int, `stability` float, `status` → `PortalStatus`) и связью `hasMany(PortalLog::class)`.
-- [ ] Task 2.9: Создать модель `PortalLog` с кастами `previous_state`/`new_state` → array, связью `belongsTo(Portal::class)`.
-- [ ] Task 2.10: Реализовать `App\Services\RiskCalculator` с методами `score(Portal $portal): int` и `level(Portal $portal): RiskLevel` по формуле из [specify.md §3](specify.md).
-- [ ] Task 2.11: Вручную проверить `RiskCalculator` через `php artisan tinker` на 2-3 вручную подобранных наборах значений, сверить результат с формулой.
-- [ ] Task 2.12: Создать исключение `App\Exceptions\PortalActionException` с полями `errorCode`, `context` и методом `render()`, возвращающим JSON 422 по формату из [plan.md §4.2](plan.md).
-- [ ] Task 2.13: Реализовать `App\Services\PortalActionService::stabilize(Portal $portal)` — проверка BR-1 (запрет на `closed`), обновление `stability`/`energy_level`/`status`, возврат снапшотов `previous_state`/`new_state`.
-- [ ] Task 2.14: Реализовать `App\Services\PortalActionService::close(Portal $portal, bool $forceEvacuate)` — проверка BR-3 (`creatures_count > 0` без `force_evacuate`), обновление `status`, формирование `description` с упоминанием принудительной эвакуации при `force_evacuate=true`.
-- [ ] Task 2.15: Реализовать `App\Services\PortalActionService::dispatchObserver(Portal $portal)` — проверка BR-2 (запрет при `RiskLevel::CRITICAL` через `RiskCalculator`), увеличение `creatures_count`, установка `status = under_review`.
-- [ ] Task 2.16: Реализовать `App\Services\PortalActionService::markUnderReview(Portal $portal)` — проверка запрета на `closed` (аналог BR-1), установка `status = under_review` без изменения прочих полей.
-- [ ] Task 2.17: Реализовать общий метод `PortalActionService::perform(Portal $portal, ActionType $action, bool $forceEvacuate)`, оборачивающий вызов конкретного метода в `DB::transaction` с `lockForUpdate()` и созданием `PortalLog` при успехе.
-- [ ] Task 2.18: Создать `App\Http\Requests\PerformPortalActionRequest` с валидацией `action` (`in:stabilize,close,dispatch_observer,mark_under_review`) и `force_evacuate` (`boolean`, nullable).
-- [ ] Task 2.19: Создать `App\Http\Resources\PortalResource`, добавляющий вычисляемые `risk_score`/`risk_level` через `RiskCalculator` к полям модели `Portal`.
-- [ ] Task 2.20: Создать `App\Http\Resources\PortalLogResource`, отдающий поля `PortalLog` в формате из [plan.md §2.4](plan.md).
-- [ ] Task 2.21: Реализовать `PortalController::index()` — список порталов с фильтрами `status`/`risk_level`, сортировкой `sort`, пагинацией и блоком `summary` (агрегаты по полному набору, не по отфильтрованному).
-- [ ] Task 2.22: Реализовать `PortalController::show(Portal $portal)` — возврат одного портала через `PortalResource`, 404 при отсутствии (стандартный route model binding).
-- [ ] Task 2.23: Реализовать `PortalActionController::perform(PerformPortalActionRequest $request, Portal $portal)` — вызов `PortalActionService::perform()`, возврат `{ data, log }` при успехе.
-- [ ] Task 2.24: Реализовать `PortalLogController::index()` — список логов с фильтрами `portal_id`/`action_type`, сортировкой `-timestamp`, пагинацией.
-- [ ] Task 2.25: Зарегистрировать маршруты `GET /api/portals`, `GET /api/portals/{portal}`, `POST /api/portals/{portal}/action`, `GET /api/logs` в `routes/api.php`.
-- [ ] Task 2.26: Проверить все 4 маршрута вручную через `curl`/Postman на реальной БД (happy path каждого действия проходит, возвращает корректный JSON).
+- [x] Task 2.1: Создать миграцию `create_portals_table` с полями по [plan.md §1.2](plan.md) (`id` UUID, `name`, `destination_world`, `energy_level`, `stability`, `time_to_collapse`, `creatures_count`, `status` enum, timestamps) и индексом по `status`.
+- [x] Task 2.2: Добавить CHECK-констрейнты на `energy_level` (1..100) и `stability` (0..1) в миграцию `portals`, проверить `php artisan migrate` выполняется без ошибок.
+- [x] Task 2.3: Создать миграцию `create_portal_logs_table` (`id` UUID, `portal_id` FK, `action_type` enum, `description`, `previous_state` JSON, `new_state` JSON, `timestamp`), внешний ключ `onDelete('cascade')`, индекс `(portal_id, timestamp)`.
+- [x] Task 2.4: Прогнать `php artisan migrate` на локальной БД `moxPortals`, проверить наличие обеих таблиц (`php artisan db:table portals`, `php artisan db:table portal_logs`).
+- [x] Task 2.5: Создать Enum `PortalStatus` (`active`, `stabilized`, `closed`, `under_review`) в `app/Enums`.
+- [x] Task 2.6: Создать Enum `ActionType` (`stabilize`, `close`, `dispatch_observer`, `mark_under_review`) в `app/Enums`.
+- [x] Task 2.7: Создать Enum `RiskLevel` (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`) в `app/Enums`.
+- [x] Task 2.8: Создать модель `Portal` с `HasUuids`, кастами полей (`energy_level` int, `stability` float, `status` → `PortalStatus`) и связью `hasMany(PortalLog::class)`.
+- [x] Task 2.9: Создать модель `PortalLog` с кастами `previous_state`/`new_state` → array, связью `belongsTo(Portal::class)`.
+- [x] Task 2.10: Реализовать `App\Services\RiskCalculator` с методами `score(Portal $portal): int` и `level(Portal $portal): RiskLevel` по формуле из [specify.md §3](specify.md).
+- [x] Task 2.11: Вручную проверить `RiskCalculator` через `php artisan tinker` на 2-3 вручную подобранных наборах значений, сверить результат с формулой.
+- [x] Task 2.12: Создать исключение `App\Exceptions\PortalActionException` с полями `errorCode`, `context` и методом `render()`, возвращающим JSON 422 по формату из [plan.md §4.2](plan.md).
+- [x] Task 2.13: Реализовать `App\Services\PortalActionService::stabilize(Portal $portal)` — проверка BR-1 (запрет на `closed`), обновление `stability`/`energy_level`/`status`, возврат снапшотов `previous_state`/`new_state`.
+- [x] Task 2.14: Реализовать `App\Services\PortalActionService::close(Portal $portal, bool $forceEvacuate)` — проверка BR-3 (`creatures_count > 0` без `force_evacuate`), обновление `status`, формирование `description` с упоминанием принудительной эвакуации при `force_evacuate=true`.
+- [x] Task 2.15: Реализовать `App\Services\PortalActionService::dispatchObserver(Portal $portal)` — проверка BR-2 (запрет при `RiskLevel::CRITICAL` через `RiskCalculator`), увеличение `creatures_count`, установка `status = under_review`.
+- [x] Task 2.16: Реализовать `App\Services\PortalActionService::markUnderReview(Portal $portal)` — проверка запрета на `closed` (аналог BR-1), установка `status = under_review` без изменения прочих полей.
+- [x] Task 2.17: Реализовать общий метод `PortalActionService::perform(Portal $portal, ActionType $action, bool $forceEvacuate)`, оборачивающий вызов конкретного метода в `DB::transaction` с `lockForUpdate()` и созданием `PortalLog` при успехе.
+- [x] Task 2.18: Создать `App\Http\Requests\PerformPortalActionRequest` с валидацией `action` (`in:stabilize,close,dispatch_observer,mark_under_review`) и `force_evacuate` (`boolean`, nullable).
+- [x] Task 2.19: Создать `App\Http\Resources\PortalResource`, добавляющий вычисляемые `risk_score`/`risk_level` через `RiskCalculator` к полям модели `Portal`.
+- [x] Task 2.20: Создать `App\Http\Resources\PortalLogResource`, отдающий поля `PortalLog` в формате из [plan.md §2.4](plan.md).
+- [x] Task 2.21: Реализовать `PortalController::index()` — список порталов с фильтрами `status`/`risk_level`, сортировкой `sort`, пагинацией и блоком `summary` (агрегаты по полному набору, не по отфильтрованному).
+- [x] Task 2.22: Реализовать `PortalController::show(Portal $portal)` — возврат одного портала через `PortalResource`, 404 при отсутствии (стандартный route model binding).
+- [x] Task 2.23: Реализовать `PortalActionController::perform(PerformPortalActionRequest $request, Portal $portal)` — вызов `PortalActionService::perform()`, возврат `{ data, log }` при успехе.
+- [x] Task 2.24: Реализовать `PortalLogController::index()` — список логов с фильтрами `portal_id`/`action_type`, сортировкой `-timestamp`, пагинацией.
+- [x] Task 2.25: Зарегистрировать маршруты `GET /api/portals`, `GET /api/portals/{portal}`, `POST /api/portals/{portal}/action`, `GET /api/logs` в `routes/api.php`.
+- [x] Task 2.26: Проверить все 4 маршрута вручную через `curl`/Postman на реальной БД (happy path каждого действия проходит, возвращает корректный JSON).
 
 ---
 
 ## Phase 3: Backend Automated Tests (PHPUnit)
 
-- [ ] Task 3.1: Написать `Unit/RiskCalculatorTest`: проверка `score()` на границах 0/25/50/75/100 и корректность бонуса `+20` при `time_to_collapse < 15` (включая проверку, что при `time_to_collapse = 15` бонус НЕ применяется).
-- [ ] Task 3.2: Написать `Unit/RiskCalculatorTest::test_level_mapping`: проверка соответствия `score → level` для всех 4 уровней (CRITICAL/HIGH/MEDIUM/LOW) на граничных и промежуточных значениях.
-- [ ] Task 3.3: Написать Feature-тест: успешный `stabilize` на портале со статусом `active` — проверка `stability = 0.95`, `energy_level` уменьшен на 10%, `status = stabilized`, создана запись `PortalLog` с `action_type = stabilize`.
-- [ ] Task 3.4: Написать Feature-тест: `stabilize` на портале со статусом `closed` — проверка HTTP 422, `error_code = PORTAL_ALREADY_CLOSED`, портал не изменился в БД, запись в `portal_logs` не создана.
-- [ ] Task 3.5: Написать Feature-тест: успешный `close` на портале с `creatures_count = 0` — проверка `status = closed` без необходимости `force_evacuate`, создана запись лога.
-- [ ] Task 3.6: Написать Feature-тест: `close` на портале с `creatures_count > 0` без `force_evacuate` — проверка HTTP 422, `error_code = EVACUATION_REQUIRED`, портал не изменён, лог не создан.
-- [ ] Task 3.7: Написать Feature-тест: `close` на портале с `creatures_count > 0` и `force_evacuate=true` — проверка `status = closed`, `description` лога содержит упоминание принудительной эвакуации.
-- [ ] Task 3.8: Написать Feature-тест: успешный `dispatch_observer` на портале с risk level, отличным от CRITICAL — проверка `creatures_count += 1`, `status = under_review`, создана запись лога.
-- [ ] Task 3.9: Написать Feature-тест: `dispatch_observer` на портале с risk level CRITICAL — проверка HTTP 422, `error_code = RISK_TOO_HIGH_FOR_OBSERVER`, портал не изменён, лог не создан.
-- [ ] Task 3.10: Написать Feature-тест: успешный `mark_under_review` на портале со статусом, отличным от `closed` — проверка изменения только `status`, прочие поля не тронуты.
-- [ ] Task 3.11: Написать Feature-тест: `mark_under_review` на портале со статусом `closed` — проверка HTTP 422 с соответствующим `error_code`.
-- [ ] Task 3.12: Написать Feature-тест: атомарность действия — при нарушении бизнес-правила количество записей в `portal_logs` до и после запроса совпадает, а поля портала в БД идентичны (полный snapshot сравнение).
-- [ ] Task 3.13: Написать Feature-тест на `GET /api/portals`: фильтр по `status` возвращает только соответствующие записи, `summary.by_status` при этом отражает полный набор (не зависит от фильтра).
-- [ ] Task 3.14: Написать Feature-тест на `GET /api/portals`: фильтр по `risk_level` корректно фильтрует данные на основе вычисленного значения (не хранимого поля).
-- [ ] Task 3.15: Написать Feature-тест на `GET /api/portals`: проверка корректности `summary.avg_risk_score_active`, `summary.creatures_total_open` и `summary.top_risky_active` (не более 5 элементов, отсортированы по убыванию риска) на подготовленном наборе данных.
-- [ ] Task 3.16: Написать Feature-тест на `GET /api/logs`: сортировка строго по `timestamp desc`, фильтр по `portal_id` возвращает только записи нужного портала.
-- [ ] Task 3.17: Написать Feature-тест на `GET /api/portals/{id}` с несуществующим UUID — проверка HTTP 404.
-- [ ] Task 3.18: Написать Feature-тест на `POST /api/portals/{id}/action` с некорректным значением `action` (не входящим в enum) — проверка HTTP 422 в формате стандартной Laravel-валидации (`errors.action`).
-- [ ] Task 3.19: Прогнать полный набор тестов (`php artisan test`), убедиться, что все тесты зелёные и покрывают BR-1/BR-2/BR-3 (US-9, AC-9.1–9.3).
+- [x] Task 3.1: Написать `Unit/RiskCalculatorTest`: проверка `score()` на границах 0/25/50/75/100 и корректность бонуса `+20` при `time_to_collapse < 15` (включая проверку, что при `time_to_collapse = 15` бонус НЕ применяется).
+- [x] Task 3.2: Написать `Unit/RiskCalculatorTest::test_level_mapping`: проверка соответствия `score → level` для всех 4 уровней (CRITICAL/HIGH/MEDIUM/LOW) на граничных и промежуточных значениях.
+- [x] Task 3.3: Написать Feature-тест: успешный `stabilize` на портале со статусом `active` — проверка `stability = 0.95`, `energy_level` уменьшен на 10%, `status = stabilized`, создана запись `PortalLog` с `action_type = stabilize`.
+- [x] Task 3.4: Написать Feature-тест: `stabilize` на портале со статусом `closed` — проверка HTTP 422, `error_code = PORTAL_ALREADY_CLOSED`, портал не изменился в БД, запись в `portal_logs` не создана.
+- [x] Task 3.5: Написать Feature-тест: успешный `close` на портале с `creatures_count = 0` — проверка `status = closed` без необходимости `force_evacuate`, создана запись лога.
+- [x] Task 3.6: Написать Feature-тест: `close` на портале с `creatures_count > 0` без `force_evacuate` — проверка HTTP 422, `error_code = EVACUATION_REQUIRED`, портал не изменён, лог не создан.
+- [x] Task 3.7: Написать Feature-тест: `close` на портале с `creatures_count > 0` и `force_evacuate=true` — проверка `status = closed`, `description` лога содержит упоминание принудительной эвакуации.
+- [x] Task 3.8: Написать Feature-тест: успешный `dispatch_observer` на портале с risk level, отличным от CRITICAL — проверка `creatures_count += 1`, `status = under_review`, создана запись лога.
+- [x] Task 3.9: Написать Feature-тест: `dispatch_observer` на портале с risk level CRITICAL — проверка HTTP 422, `error_code = RISK_TOO_HIGH_FOR_OBSERVER`, портал не изменён, лог не создан.
+- [x] Task 3.10: Написать Feature-тест: успешный `mark_under_review` на портале со статусом, отличным от `closed` — проверка изменения только `status`, прочие поля не тронуты.
+- [x] Task 3.11: Написать Feature-тест: `mark_under_review` на портале со статусом `closed` — проверка HTTP 422 с соответствующим `error_code`.
+- [x] Task 3.12: Написать Feature-тест: атомарность действия — при нарушении бизнес-правила количество записей в `portal_logs` до и после запроса совпадает, а поля портала в БД идентичны (полный snapshot сравнение).
+- [x] Task 3.13: Написать Feature-тест на `GET /api/portals`: фильтр по `status` возвращает только соответствующие записи, `summary.by_status` при этом отражает полный набор (не зависит от фильтра).
+- [x] Task 3.14: Написать Feature-тест на `GET /api/portals`: фильтр по `risk_level` корректно фильтрует данные на основе вычисленного значения (не хранимого поля).
+- [x] Task 3.15: Написать Feature-тест на `GET /api/portals`: проверка корректности `summary.avg_risk_score_active`, `summary.creatures_total_open` и `summary.top_risky_active` (не более 5 элементов, отсортированы по убыванию риска) на подготовленном наборе данных.
+- [x] Task 3.16: Написать Feature-тест на `GET /api/logs`: сортировка строго по `timestamp desc`, фильтр по `portal_id` возвращает только записи нужного портала.
+- [x] Task 3.17: Написать Feature-тест на `GET /api/portals/{id}` с несуществующим UUID — проверка HTTP 404.
+- [x] Task 3.18: Написать Feature-тест на `POST /api/portals/{id}/action` с некорректным значением `action` (не входящим в enum) — проверка HTTP 422 в формате стандартной Laravel-валидации (`errors.action`).
+- [x] Task 3.19: Прогнать полный набор тестов (`php artisan test`), убедиться, что все тесты зелёные и покрывают BR-1/BR-2/BR-3 (US-9, AC-9.1–9.3).
 
 ---
 
